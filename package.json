@@ -1,0 +1,9 @@
+{
+    "name": "probability-picker",
+    "version": "1.0.1",
+    "main": "probability-picker.js",
+    "license": "MIT",
+    "keywords": [
+        "probability"
+    ]
+}
