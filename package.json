@@ -1,17 +1,40 @@
 {
     "name": "probability-picker",
-    "version": "1.0.1",
-    "main": "probability-picker.js",
-    "license": "MIT",
-    "keywords": [
-        "probability"
+    "version": "1.1.0",
+    "description": "A lightweight library for selecting random values based on weighted probabilities.",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.js",
+            "require": "./dist/index.cjs"
+        }
+    },
+    "files": [
+        "dist",
+        "README.md",
+        "LICENSE"
     ],
-    "type": "module",
     "scripts": {
         "build": "tsup",
         "dev": "tsup --watch",
         "lint": "tsc --noEmit"
     },
+    "keywords": [
+        "probability",
+        "weighted",
+        "random"
+    ],
+    "author": "qgave (https://github.com/qgave)",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/qgave/probability-picker"
+    },
+    "type": "module",
+    "sideEffects": false,
     "devDependencies": {
         "tsup": "^8.5.1",
         "typescript": "^5.9.3"
