@@ -1,10 +1,10 @@
 # Probability Picker
-A library that helps obtain a value based on probability.
+A lightweight library for selecting random values based on weighted probabilities.
 
 ## Installation
 
 ```bash
-npm install probability-picker
+npm i probability-picker
 ```
 
 ## Usage
@@ -12,9 +12,9 @@ npm install probability-picker
 The `probabilityPicker` function will return `a`, `b`, or `c`. The probability of each one is defined as a value in the object.
     
 ```javascript
-import probabilityPicker from 'probability-picker';
+import picker from 'probability-picker';
 
-const value = probabilityPicker({
+const value = picker({
     a: 10,
     b: 70,
     c: 20,
