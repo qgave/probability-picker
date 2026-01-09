@@ -5,5 +5,14 @@
     "license": "MIT",
     "keywords": [
         "probability"
-    ]
+    ],
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch",
+        "lint": "tsc --noEmit"
+    },
+    "devDependencies": {
+        "tsup": "^8.5.1",
+        "typescript": "^5.9.3"
+    }
 }
