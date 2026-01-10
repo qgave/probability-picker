@@ -20,7 +20,8 @@
     "scripts": {
         "build": "tsup",
         "dev": "tsup --watch",
-        "lint": "tsc --noEmit"
+        "lint": "tsc --noEmit",
+        "test": "vitest run"
     },
     "keywords": [
         "probability",
