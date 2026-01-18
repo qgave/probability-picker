@@ -27,8 +27,17 @@ function prepareEntries(entries: Entry[]) {
     return normalizeProbabilities(sorted, sum)
 }
 
+function secureRandom(): number {
+    if (typeof crypto === 'undefined' || typeof crypto.getRandomValues !== 'function') {
+        return Math.random()
+    }
+    const array = new Uint32Array(1)
+    globalThis.crypto.getRandomValues(array)
+    return array[0]! / 0x100000000
+}
+
 function random(min: number, max: number) {
-    return Math.random() * (max - min) + min
+    return secureRandom() * (max - min) + min
 }
 
 function chooseOne(entries: Entry[]) {
