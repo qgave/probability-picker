@@ -7,6 +7,13 @@ describe('probabilityPicker', () => {
     beforeEach(() => {
         vi.restoreAllMocks()
         randomSpy = vi.spyOn(Math, 'random')
+
+        if (typeof crypto !== 'undefined') {
+            vi.spyOn(crypto, 'getRandomValues').mockImplementation((arr) => {
+                (arr as Uint32Array)[0] = Math.floor(Math.random() * 0x100000000)
+                return arr
+            })
+        }
     })
 
     const forceRandom = (val: number) => {
@@ -58,5 +65,23 @@ describe('probabilityPicker', () => {
         forceRandom(0.5)
         const result = pick(mixedData)
         expect(['valid', 'alsoValid']).toContain(result)
+    })
+
+    describe('engine selection', () => {
+        it('uses crypto when available', () => {
+            const spy = vi.spyOn(crypto, 'getRandomValues')
+            pick({ a: 50, b: 50 })
+            expect(spy).toHaveBeenCalled()
+        })
+
+        it('falls back to Math.random when crypto is missing', () => {
+            vi.stubGlobal('crypto', undefined)
+            const spy = vi.spyOn(Math, 'random')
+
+            pick({ a: 50, b: 50 })
+
+            expect(spy).toHaveBeenCalled()
+            vi.unstubAllGlobals()
+        })
     })
 })
