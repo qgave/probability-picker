@@ -1,44 +1,53 @@
 {
-    "name": "probability-picker",
-    "version": "1.2.0",
-    "description": "A lightweight library for selecting random values based on weighted probabilities.",
-    "main": "./dist/index.cjs",
-    "module": "./dist/index.js",
-    "types": "./dist/index.d.ts",
-    "exports": {
-        ".": {
-            "types": "./dist/index.d.ts",
-            "import": "./dist/index.js",
-            "require": "./dist/index.cjs"
-        }
-    },
-    "files": [
-        "dist",
-        "README.md",
-        "LICENSE"
-    ],
-    "scripts": {
-        "build": "tsup",
-        "dev": "tsup --watch",
-        "lint": "tsc --noEmit",
-        "test": "vitest run"
-    },
-    "keywords": [
-        "probability",
-        "weighted",
-        "random"
-    ],
-    "author": "qgave (https://github.com/qgave)",
-    "license": "MIT",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/qgave/probability-picker"
-    },
-    "type": "module",
-    "sideEffects": false,
-    "devDependencies": {
-        "tsup": "^8.5.1",
-        "typescript": "^5.9.3",
-        "vitest": "^4.0.16"
+  "name": "probability-picker",
+  "version": "2.0.0",
+  "description": "A lightweight library for selecting random values based on weighted probabilities.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "keywords": [
+    "probability",
+    "weighted",
+    "random"
+  ],
+  "author": {
+    "name": "qgave",
+    "url": "https://github.com/qgave"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qgave/probability-picker.git"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "tsup": "^8.5.1",
+    "vitest": "^4.0.17"
+  }
 }
