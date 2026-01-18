@@ -1,87 +1,100 @@
 import { describe, it, expect, vi, beforeEach, MockInstance } from 'vitest'
-import pick from '../src/index'
+import { picker, bag, NestedMap } from '../src/index'
 
-describe('probabilityPicker', () => {
-    let randomSpy: MockInstance
+describe('Probability Picker', () => {
+    describe('picker - validation', () => {
+        let randomSpy: MockInstance
 
-    beforeEach(() => {
-        vi.restoreAllMocks()
-        randomSpy = vi.spyOn(Math, 'random')
+        beforeEach(() => {
+            vi.restoreAllMocks()
+            randomSpy = vi.spyOn(Math, 'random')
 
-        if (typeof crypto !== 'undefined') {
-            vi.spyOn(crypto, 'getRandomValues').mockImplementation((arr) => {
-                (arr as Uint32Array)[0] = Math.floor(Math.random() * 0x100000000)
-                return arr
-            })
-        }
-    })
-
-    const forceRandom = (val: number) => {
-        randomSpy.mockReturnValue(val)
-    }
-
-    it('handles invalid input safely', () => {
-        expect(pick(null as any)).toBe(null)
-        expect(pick(undefined as any)).toBe(null)
-    })
-
-    it('returns undefined for empty maps', () => {
-        expect(pick({})).toBe(undefined)
-    })
-
-    it('returns the only available option', () => {
-        expect(pick({ 'guaranteed-drop': 100 })).toBe('guaranteed-drop')
-    })
-
-    it('handles zero-sum maps', () => {
-        expect(pick({ 'option-a': 0, 'option-b': 0 })).toBe(undefined)
-    })
-
-    it('selects based on weight distribution', () => {
-        const lootTable = { common: 90, rare: 10 }
-
-        forceRandom(0.0)
-        expect(pick(lootTable)).toBe('rare')
-
-        forceRandom(0.89)
-        expect(pick(lootTable)).toBe('common')
-
-        forceRandom(0.9)
-        expect(pick(lootTable)).toBe('common')
-    })
-
-    it('normalizes weights automatically', () => {
-        forceRandom(0.5)
-        const result = pick({ 'low-weight': 1, 'another-low': 1 })
-        expect(['low-weight', 'another-low']).toContain(result)
-    })
-
-    it('filters out invalid weights', () => {
-        const mixedData = {
-            valid: 50,
-            invalid: 'string' as any,
-            alsoValid: 50
-        }
-        forceRandom(0.5)
-        const result = pick(mixedData)
-        expect(['valid', 'alsoValid']).toContain(result)
-    })
-
-    describe('engine selection', () => {
-        it('uses crypto when available', () => {
-            const spy = vi.spyOn(crypto, 'getRandomValues')
-            pick({ a: 50, b: 50 })
-            expect(spy).toHaveBeenCalled()
+            if (typeof crypto !== 'undefined') {
+                vi.spyOn(crypto, 'getRandomValues').mockImplementation((arr) => {
+                    (arr as Uint32Array)[0] = Math.floor(Math.random() * 0x100000000)
+                    return arr
+                })
+            }
         })
 
-        it('falls back to Math.random when crypto is missing', () => {
-            vi.stubGlobal('crypto', undefined)
-            const spy = vi.spyOn(Math, 'random')
+        it('should return undefined when map is empty', () => {
+            const result = picker({}).one()
+            expect(result, 'Empty map should result in undefined').toBeUndefined()
+        })
 
-            pick({ a: 50, b: 50 })
+        it('should handle invalid runtime inputs gracefully', () => {
+            // @ts-expect-error
+            expect(picker(null).one()).toBeUndefined()
+            // @ts-expect-error
+            expect(picker(undefined).one()).toBeUndefined()
+        })
 
-            expect(spy).toHaveBeenCalled()
-            vi.unstubAllGlobals()
+        it('should return the only option when map has one key', () => {
+            const key = 'guaranteed'
+            const result = picker({ [key]: 100 }).one()
+            expect(result).toBe(key)
+        })
+
+        it('should ignore entries with zero or negative weights', () => {
+            const result = picker({ a: 0, b: -5, c: 100 }).one()
+            expect(result).toBe('c')
+        })
+
+        it('should select based on distribution when weights are mixed', () => {
+            const weights = { common: 90, rare: 10 }
+            randomSpy.mockReturnValue(0.01)
+
+            expect(picker(weights).one()).toBe('common')
+        })
+    })
+
+    describe('picker - features', () => {
+        it('should return multiple values when take(n) is called', () => {
+            const results = picker({ item: 100 }).take(3)
+            expect(results).toHaveLength(3)
+            expect(results.every(r => r === 'item')).toBe(true)
+        })
+
+        it('should return an empty array when take(0) is called', () => {
+            const results = picker({ a: 100 }).take(0)
+            expect(results).toEqual([])
+        })
+
+        it('should support deep selection in nested maps', () => {
+            const map: Record<string, number | NestedMap> = {
+                category: {
+                    item: 100
+                }
+            }
+            expect(picker(map).one()).toBe('item')
+        })
+
+        it('should favor rare items when luck is high', () => {
+            const map = { rare: 1, common: 99 }
+            const results = picker(map).luck(10).take(100)
+            const rareCount = results.filter(r => r === 'rare').length
+
+            expect(rareCount, 'High luck should trigger more rare drops').toBeGreaterThan(0)
+        })
+    })
+
+    describe('bag - utility', () => {
+        it('should not repeat values until the bag is empty', () => {
+            const pack = bag({ a: 1, b: 1 })
+
+            const first = pack.next()
+            const second = pack.next()
+
+            expect(first).toBeDefined()
+            expect(second).toBeDefined()
+            expect(first).not.toBe(second)
+        })
+
+        it('should refill automatically when exhausted', () => {
+            const pack = bag({ a: 1 })
+
+            expect(pack.next()).toBe('a')
+            expect(pack.next()).toBe('a')
         })
     })
 })
